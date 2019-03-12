@@ -1,0 +1,37 @@
+ #include "stm32f10x.h"
+void pwm_init() 
+{
+//	TIM1->CR1 |= 0X00000001;
+//	TIM1->CR2 |= 0X00000100;
+//	TIM1->EGR |= 0X00000001;
+//	TIM1->CCMR1 |= 0X0000006C;
+//	TIM1->CCER |= 0X00000001;
+//	TIM1->PSC = 23999;
+//	TIM1->ARR = 100;
+//	TIM1->CCR1 = 50;
+//	TIM1->BDTR |= 0X00008400;
+//	TIM1->CR1 |= 0X00000081;
+	
+	TIM1->CR1 |= TIM_CR1_CEN;
+	TIM1->CR2 |= TIM_CR2_OIS1;
+	TIM1->EGR |= TIM_EGR_UG;
+	TIM1->CCMR1 |= TIM_CCMR1_OC1M_2 | TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1PE | TIM_CCMR1_OC1FE;
+	TIM1->CCER |= TIM_CCER_CC1E;
+	TIM1->PSC = 23999;
+	TIM1->ARR = 100;
+	TIM1->CCR1 = 50;
+	TIM1->BDTR |= TIM_BDTR_MOE | TIM_BDTR_OSSI;
+	TIM1->CR1 |= TIM_CR1_ARPE | TIM_CR1_CEN;
+}
+void update_pwm(int in) 
+{
+	TIM1->CCR1 = in;
+	TIM1->EGR |= TIM_EGR_UG;
+}
+void update_tone(int in)
+{
+	int old = TIM1->ARR;
+	int q = TIM1->CCR1;
+	TIM1->ARR = in;
+	TIM1->CCR1 = (q / old) * in;
+}
